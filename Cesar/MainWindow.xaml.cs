@@ -27,6 +27,35 @@ namespace Cesar
 
         private void Button_ClickSzyfruj(object sender, RoutedEventArgs e)
         {
+            string stringText = textset.Text;
+            Szyfruj(ref stringText);
+            textget.Text = stringText;
+        }
+
+        private void Button_ClickDeszyfruj(object sender, RoutedEventArgs e)
+        {
+            string stringText = textset.Text;
+            Deszyfruj(ref stringText);
+            textget.Text = stringText;
+        }
+
+        private void Button_ClickCzysc(object sender, RoutedEventArgs e)
+        {
+            textget.Text = textget.Text = "Tekst po szyfrowaniu lub deszyfrowaniu";
+            textset.Text = textset.Text= "Podaj tekst do szyfrowania lub deszyfrowania";
+            scroll.SelectedItem = scroll.SelectedIndex=0;
+        }
+
+        private void scroll_Loaded(object sender, RoutedEventArgs e)
+        {
+            for (int i = 1; i <= 34; i++)
+            {
+                scroll.Items.Add(i);
+            }
+        }
+        
+        private string Szyfruj(ref string stringText)
+        {
             char[] tablicaZnakow = textset.Text.ToCharArray();
             char[] alfabet = Alfabet();
             int selectedIndex = scroll.SelectedIndex;
@@ -38,7 +67,7 @@ namespace Cesar
                 char letter = tablicaZnakow[i];
 
                 if (!(alfabet.Contains(letter)))
-                    letter = default;
+                     letter = default;
 
                 for (int j = 0; j < alfabet.Length; j++)
                 {
@@ -57,14 +86,17 @@ namespace Cesar
                         break;
                     }
                 }
+                if (scroll.SelectedIndex == 0) tablicaZnakow[i]= default;
+                else
                 tablicaZnakow[i] = letter;
             }
-            string ciagString = new string(tablicaZnakow);
-
-            textget.Text = ciagString;
+            char[] cutArray = RemveFromArray(tablicaZnakow, '\0');
+            stringText = new string(cutArray);
+         
+            return stringText;
         }
-
-        private void Button_ClickDeszyfruj(object sender, RoutedEventArgs e)
+        
+        private string Deszyfruj(ref string stringText)
         {
             char[] tablicaZnakow = textset.Text.ToCharArray();
             char[] alfabet = Alfabet();
@@ -96,18 +128,14 @@ namespace Cesar
                         break;
                     }
                 }
-                tablicaZnakow[i] = letter;
+                if (scroll.SelectedIndex == 0) tablicaZnakow[i] = default;
+                else
+                    tablicaZnakow[i] = letter;
             }
-            string ciagString = new string(tablicaZnakow);
+            char[] cutArray = RemveFromArray(tablicaZnakow, '\0');
+            stringText = new string(cutArray);
 
-            textget.Text = ciagString;
-        }
-
-        private void Button_ClickCzysc(object sender, RoutedEventArgs e)
-        {
-            textget.Text = default;
-            textset.Text = default;
-            scroll.SelectedItem = null;
+            return stringText;
         }
 
         static string ToLower(char[] arr)
@@ -129,17 +157,28 @@ namespace Cesar
             return alfabet;
         }
 
-        private void textset_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private static char[] AlfabetWithoutPolishCharacters()
         {
-            textset.Clear();
+            char[] alfabet = { 'a', 'b', 'c', 'd', 'e','f', 'g', 'h', 'i', 'j','k',
+                'l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+            return alfabet;
         }
 
-        private void scroll_Loaded(object sender, RoutedEventArgs e)
+        static char[] RemveFromArray(char[] source, char value)
         {
-            for (int i = 1; i <= 34; i++)
+            if (source == null)
+                return null;
+
+            char[] result = new char[source.Length];
+
+            int resultIdx = 0;
+            for (int ii = 0; ii < source.Length; ii++)
             {
-                scroll.Items.Add(i);
+                if (source[ii] != value)
+                    result[resultIdx++] = source[ii];
             }
+
+            return result.Take(resultIdx).ToArray();
         }
     }
 
